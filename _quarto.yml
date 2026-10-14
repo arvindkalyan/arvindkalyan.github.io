@@ -13,7 +13,10 @@ format:
     theme:
       - cosmo
       - brand
+      - theme.scss
     css: styles.css
+    grid:
+      body-width: 700px
 
 
 

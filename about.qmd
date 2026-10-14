@@ -1,28 +1,22 @@
 ---
 title: "About"
-image: assets/headshot.jpg
-about:
-  template: jolla
-  links:
-    - icon: linkedin
-      text: LinkedIn
-      href: https://www.linkedin.com/in/arvind-kalyan-47b5661b6/
-    - icon: github
-      text: Github
-      href: http://github.com/arvindkalyan
-
+body-classes: about-page
 ---
 
 My name is Arvind Kalyan.
 
-I have spent the last year in Qualcomm's Wireless Research Department, where we build the 6G user experience. 
+I have spent the last year in Qualcomm's Wireless Research Department, where we build the 6G user experience.
 
 Previously, I graduated from UCLA with a BS and MS in Computer Science and a minor in bioinformatics.
-I worked in the Sankararaman Lab to complete my Master's Thesis on structured missingness. 
+I worked in the Sankararaman Lab to complete my Master's Thesis on structured missingness.
 
 I'm most proud of my work with Bruin Sports Analytics, where I was president and led the football consulting team.
-We worked with the football coaching staff to develop a scouting tool to aid their mid-week opponent preparation. 
+We worked with the football coaching staff to develop a scouting tool to aid their mid-week opponent preparation.
 
 My research interests lie in post-training algorithms and imputation methods.
-Broadly, I am fascinated by the applications of these paradigms in bioinformatics. 
+Broadly, I am fascinated by the applications of these paradigms in bioinformatics.
 This blog exists to prove that.
+
+::: {.elsewhere}
+[LinkedIn](https://www.linkedin.com/in/arvind-kalyan-47b5661b6/) [GitHub](http://github.com/arvindkalyan)
+:::
