@@ -12,22 +12,125 @@
 <generator>quarto-1.10.19</generator>
 <lastBuildDate>Wed, 14 Oct 2026 07:00:00 GMT</lastBuildDate>
 <item>
-  <title>First Post</title>
+  <title>IN PROGRESS: Binary RAR on a Narrow Corpus: Experiment 0</title>
   <dc:creator>Arvind Kalyan</dc:creator>
-  <link>https://arvindkalyan.github.io/posts/first-post/</link>
+  <link>https://arvindkalyan.github.io/posts/binaryrar-exp0/</link>
   <description><![CDATA[ 
 
 
 
 
 
-<p>Wanted to see if this actually works.</p>
+<section id="motivation" class="level2">
+<h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
+<p>Binary RAR (Chen et al.) introduces a reward function to online RL used in post-training of LMs. The authors find a significant reduction in both short- and long-form hallucination rates, outperforming supervised learning and preference optimization baselines.</p>
+<p>Binary RAR works within the GRPO (Group Relative Policy Optimization) paradigm. Before training, for each prompt <img src="https://latex.codecogs.com/png.latex?x"> and its golden response, the algorithm queries the Google Search API to retrieve up to 10 relevant web pages as evidence. Then, for each <img src="https://latex.codecogs.com/png.latex?(x,%20y)"> prompt-response rollout from the LM, the response <img src="https://latex.codecogs.com/png.latex?y"> is compared with the collected evidence for that prompt using a verifier. If there is a contradiction, the reward is 0; if not, the reward is 1.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>The math
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>We establish notation following (Chen et al).</p>
+<p>Let <img src="https://latex.codecogs.com/png.latex?x"> be a question given to policy model <img src="https://latex.codecogs.com/png.latex?%5Cpi_%5Ctheta">, where the response <img src="https://latex.codecogs.com/png.latex?y%20%5Csim%20%5Cpi_%5Ctheta(%5Ccdot%20%5C,%20%7C%20x)">.</p>
+<p>The primary objective of reinforcement learning is to find an optimal policy <img src="https://latex.codecogs.com/png.latex?%5Cpi_%5Ctheta"> to maximize a reward function <img src="https://latex.codecogs.com/png.latex?r(x,y)"> while remaining true to the reference model <img src="https://latex.codecogs.com/png.latex?%5Cpi_%5Ctext%7Bref%7D">. Formally:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cmax_%7B%5Cpi_%5Ctheta%7D%20%5Cmathbb%7BE%7D_%7B%5Csubstack%7Bx%20%5Csim%20%5Cmathcal%7BD%7D%20%5C%5C%20y%20%5Csim%20%5Cpi_%5Ctheta(%5Ccdot%20%5Cmid%20x)%7D%7D%0A%5Cleft%5Br(x,y)%20-%20%5Cbeta%20%5C,%20%5Cmathbb%7BD%7D_%7B%5Ctext%7BKL%7D%7D(%5Cpi_%5Ctheta(%5Ccdot%20%5Cmid%20x)%20%5Cparallel%20%5Cpi_%7B%5Ctext%7Bref%7D%7D(%5Ccdot%20%5Cmid%20x))%5Cright%5D%0A"></p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Cbeta"> is a hyperparameter that tunes the KL-penalty.</p>
+<p>This objective is most effectively optimized using Group Relative Policy Optimization (DeepSeek et al), used over its counterparts due to computational efficiency and training stability. Each question <img src="https://latex.codecogs.com/png.latex?x"> is passed to the existing policy model <img src="https://latex.codecogs.com/png.latex?%5Cpi_%7B%5Ctext%7Bold%7D%7D"> and <img src="https://latex.codecogs.com/png.latex?n"> outputs <img src="https://latex.codecogs.com/png.latex?y_1,%20%5Cdots,%20y_n"> are sampled. Policy model <img src="https://latex.codecogs.com/png.latex?%5Cpi_%5Ctheta"> is updated by maximizing:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cbegin%7Baligned%7D%0A%5Cmax_%7B%5Cpi_%5Ctheta%7D%20%5Cmathbb%7BE%7D_%7B%5Csubstack%7Bx%20%5Csim%20%5Cmathcal%7BD%7D%20%5C%5C%20%5C%7By_i%5C%7D%5En_%7Bi=1%7D%20%5Csim%20%5Cpi_%5Ctext%7Bold%7D(%5Ccdot%20%5Cmid%20x)%7D%7D%0A%5Cdfrac%7B1%7D%7Bn%7D%20%5Csum_%7Bi=1%7D%5En%20%5Cdfrac%7B1%7D%7B%7Cy_i%7C%7D%20%5Csum_%7Bj=1%7D%5E%7B%7Cy_i%7C%7D%20%5CBigg%5B%0A&amp;%5Ctext%7Bmin%7D%20%5CBigg%5B%20%5Cdfrac%7B%5Cpi_%5Ctheta(y_%7Bi,j%7D%20%5C,%20%7C%20y_%7Bi,%20%3Cj%7D,%20x)%7D%7B%5Cpi_%5Ctext%7Bold%7D(y_%7Bi,j%7D%20%5C,%20%7C%20y_%7Bi,%20%3Cj%7D,%20x)%7DA_i%20%5C,,%20%5C%5C%0A&amp;%5Cqquad%20%5Ctext%7Bclip%7D%5Cleft(%5Cdfrac%7B%5Cpi_%5Ctheta(y_%7Bi,j%7D%20%5C,%20%7C%20y_%7Bi,%20%3Cj%7D,%20x)%7D%7B%5Cpi_%5Ctext%7Bold%7D(y_%7Bi,j%7D%20%5C,%20%7C%20y_%7Bi,%20%3Cj%7D,%20x)%7D,%201-%5Cepsilon,%201+%5Cepsilon%20%5Cright)%20A_i%20%5CBigg%5D%20%5C%5C%0A&amp;-%20%5Cbeta%20%5C,%20%5Cmathbb%7BD'%7D_%7B%5Ctext%7BKL%7D%7D(%5Cpi_%5Ctheta%20%5Cparallel%20%5Cpi_%7B%5Ctext%7Bref%7D%7D)%20%5CBigg%5D%0A%5Cend%7Baligned%7D%0A"></p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Cepsilon">, along with aforementioned <img src="https://latex.codecogs.com/png.latex?%5Cbeta">, are hyperparameters.</p>
+<p><img src="https://latex.codecogs.com/png.latex?A_i"> is the advantage term (Schulman et al), represented by:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AA_i%20=%20%5Cdfrac%7Br(x,%20y_i)%20-%20%5Coperatorname%7Bmean%7D%5Cleft%5Br(x,%20y_1),%20%5Cdots,%20r(x,%20y_n)%5Cright%5D%7D%7B%5Coperatorname%7Bstd%7D%5Cleft%5Br(x,%20y_1),%20%5Cdots,%20r(x,%20y_n)%5Cright%5D%7D%0A"></p>
+<p>We use an unbiased, low-variance estimator of KL-Divergence from Schulman et al, as calculating the exact value in high-dimensional spaces presents tractability concerns.</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cmathbb%7BD'%7D_%7B%5Ctext%7BKL%7D%7D(%5Cpi_%5Ctheta%20%5Cparallel%20%5Cpi_%7B%5Ctext%7Bref%7D%7D)%20=%20%5Cdfrac%7B%5Cpi_%5Ctext%7Bref%7D(y_i%20%5C,%20%7C%20x)%7D%7B%5Cpi_%5Ctheta(y_i%20%5C,%20%7C%20x)%7D%20-%20%5Coperatorname%7Blog%7D%20%5Cdfrac%7B%5Cpi_%5Ctext%7Bref%7D(y_i%20%5C,%20%7C%20x)%7D%7B%5Cpi_%5Ctheta(y_i%20%5C,%20%7C%20x)%7D%20-%201%0A"></p>
+</div>
+</div>
+</div>
+<p>The models are trained against WildChat (Zhao et al.) prompts and evaluated against a list of fields including: biographies, general knowledge facts, and graduate-level biology, chemistry and physics. The results show a significant drop in hallucination rates compared to existing baselines. These gains come from precision: total claims fall while the number of correct claims is roughly unchanged.</p>
+<p>The authors saw increased abstention when the model was allowed to say “I don’t know” with similar correctness across answered questions.</p>
+<p>The reward function serves as a proxy for factual correctness in training. The authors claim that the method doesn’t require high-quality evidence, and that gaps in evidence are neutral rather than harmful. This assumption may hold for general knowledge questions, where gaps impact each prompt’s rollout evenly. However, this assumption may be broken on specific tasks in a narrower domain where evidence gaps impact each rollout differently.</p>
+<p>We maintain three hypotheses for the model’s performance against a narrow corpus where differences may arise between rollouts of the same prompt.</p>
+<ul>
+<li><strong>H1:</strong> precision rises against questions in the specific domain, reducing hallucinations and reproducing the authors’ results in a new domain.</li>
+<li><strong>H2:</strong> as corpus coverage drops, fewer claims can be contradicted, and more responses receive “1” rewards. Which consequence follows?
+<ul>
+<li><strong>H2a:</strong> rollouts with claims that fall outside the narrow corpus become favorable, policy moves toward un-checkable answers, rewards increase as precision drops.</li>
+<li><strong>H2b:</strong> authors’ claim: “When evidence is missing, the verifier often cannot identify a contradiction, so different responses tend to receive the same reward and the update is close to neutral rather than systematically harmful.” Performance remains in line with the base model.</li>
+</ul></li>
+</ul>
+<p>We test Binary RAR against a closed corpus - namely, biomedical questions from PubMedQA. We propose a set of experiments to test these hypotheses.</p>
+</section>
+<section id="experiment-0" class="level2">
+<h2 class="anchored" data-anchor-id="experiment-0">Experiment 0</h2>
+<p>Before running RL fine-tuning using the new corpus, we need to probe the reward function and its downstream impact on the model.</p>
+<ul>
+<li>How does the verifier assign rewards to the base model’s responses against the PubMedQA corpus?</li>
+<li>Can we estimate the trained policy’s output distribution before expensive training steps?</li>
+</ul>
+<section id="e0.1" class="level3">
+<h3 class="anchored" data-anchor-id="e0.1">E0.1</h3>
+<section id="setup" class="level4">
+<h4 class="anchored" data-anchor-id="setup">Setup</h4>
+<p>We sample 100 questions from PubMedQA (pqa_labeled), evenly stratified by final decision (yes, no, maybe), and wrap each in a long-form prompt: “Explain what the research evidence says about the following question: {question}”. Each prompt has a golden abstract, which contains the specific evidence for that question.</p>
+</section>
+<section id="policy-model" class="level4">
+<h4 class="anchored" data-anchor-id="policy-model">Policy Model</h4>
+<p>We generate a rollout of eight responses to each of the selected prompts using a Qwen3-4B model with thinking enabled. We test using the temperature of 1.0 in the authors’ code, though we note that the recommended temperature is 0.7.</p>
+</section>
+<section id="corpus" class="level4">
+<h4 class="anchored" data-anchor-id="corpus">Corpus</h4>
+<p>We use BinaryRAR’s provided chunking mechanism (Qwen3 tokenizer, 512 token chunks) on abstracts inside PubMedQA. We use all abstracts between labeled, unlabeled, and artificial prompts, deduplicated by their PubMed IDs, to create a comprehensive corpus. We do not add the question as a title.</p>
+<p>Rollouts are reported under nine corpus conditions across two dimensions:</p>
+<ul>
+<li><strong>Golden abstract In/Out:</strong> for each prompt, we test once with its golden abstract in the corpus and once left out.</li>
+<li><strong>Background fraction:</strong> 0% (control), 10%, 30%, 70%, 100% of the total corpus, selected uniformly randomly, probing the resultant behavior of the reward function. For the middle three proportions, we create three replicates. Replicates are nested within each seed.</li>
+</ul>
+</section>
+<section id="reward-function" class="level4">
+<h4 class="anchored" data-anchor-id="reward-function">Reward Function</h4>
+<p>We use the same verifier model (Qwen3-32B) and system prompt designed by the authors. Since the full corpus can’t fit inside the context length of the verifier, we use a BM25 retriever to collect the top-8 chunks. The query will be the policy model’s final output against a corpus specified by the above conditions. We will also report the probability of surfacing the golden abstract in BM25-retrieved chunks in gold-in conditions at each background level.</p>
+</section>
+<section id="oracle-model" class="level4">
+<h4 class="anchored" data-anchor-id="oracle-model">Oracle Model</h4>
+<p>To evaluate the policy model’s outputs against rewards, we use an oracle model (gpt-4.1-mini). It takes in the model’s response, the golden abstract, and the target answer. It will check for the following:</p>
+<ul>
+<li><strong>Atomic claim extraction:</strong> each claim can be labeled supported, contradictory, unsupported, background claims (SCUB).</li>
+<li><strong>Abstained</strong> (boolean)</li>
+<li><strong>Final Decision</strong> (yes, no, maybe; comparable to final_decision)</li>
+</ul>
+<p>We will create a basic benchmark of the oracle model by hand-labeling 50 responses and manually verifying them against oracle outputs. These will be labeled blind to reward, condition, and oracle output, and we will report Cohen’s Kappa against the oracle.</p>
+<p>Note: the verifier and oracle only see final answers (any text after <code>&lt;/think&gt;</code>). Model responses that hit the token limit during thinking receive a 0 reward.</p>
+</section>
+</section>
+<section id="e0.2" class="level3">
+<h3 class="anchored" data-anchor-id="e0.2">E0.2</h3>
+<section id="purpose" class="level4">
+<h4 class="anchored" data-anchor-id="purpose">Purpose</h4>
+<p>E0.1’s simulated policy assumes that the rejection-sampled kept set approximates a policy actually trained with Binary RAR. E0.2 tests this assumption against the authors’ released checkpoint, and measures how much the authors’ general-domain training already transfers to PubMedQA.</p>
+</section>
+<section id="setup-1" class="level4">
+<h4 class="anchored" data-anchor-id="setup-1">Setup</h4>
+<p>We compare base Qwen3-4B with the authors’ released Binary RAR checkpoint (chentong00/Qwen3-4B-GRPO-Binary-RAR), using the same sampling settings as E0.1 (thinking enabled, temperature 1.0).</p>
+<ol type="a">
+<li><p>Simulation fidelity: we take 40 prompts from the authors’ training set (chentong00/binary-rar-wildchat-8k) along with their cached documents. These are prompts the checkpoint was trained on, which matches the setting the theory describes. The base model generates eight responses per prompt, rewarded with the authors’ own setup (BM25 top-8 over that prompt’s cached documents, 512-token chunks, Qwen3-32B verifier), and we form the kept set as in E0.1. The checkpoint generates two responses per prompt. All responses are scored with the authors’ FactScore evaluation from their repository (gpt-4.1 claim extraction, gpt-4.1-mini claim verification against the cached documents).</p></li>
+<li><p>Transfer baseline: the checkpoint generates two responses for each of the 100 E0.1 PubMedQA prompts, scored by the E0.1 oracle.</p></li>
+</ol>
 
 
+</section>
+</section>
+</section>
 
  ]]></description>
-  <category>meta</category>
-  <guid>https://arvindkalyan.github.io/posts/first-post/</guid>
+  <category>reinforcement learning</category>
+  <category>hallucination</category>
+  <guid>https://arvindkalyan.github.io/posts/binaryrar-exp0/</guid>
   <pubDate>Wed, 14 Oct 2026 07:00:00 GMT</pubDate>
 </item>
 </channel>
