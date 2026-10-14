@@ -1,8 +1,0 @@
----
-title: "First Post"
-author: "Arvind Kalyan"
-date: "2026-10-14"
-categories: [meta]
----
-
-Wanted to see if this actually works.
