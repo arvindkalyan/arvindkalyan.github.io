@@ -12,47 +12,23 @@
 <generator>quarto-1.10.19</generator>
 <lastBuildDate>Wed, 14 Oct 2026 07:00:00 GMT</lastBuildDate>
 <item>
-  <title>Post With Code</title>
-  <dc:creator>Harlow Malloc</dc:creator>
-  <link>https://arvindkalyan.github.io/posts/post-with-code/</link>
+  <title>First Post</title>
+  <dc:creator>Arvind Kalyan</dc:creator>
+  <link>https://arvindkalyan.github.io/posts/first-post/</link>
   <description><![CDATA[ 
 
 
 
 
 
-<p>This is a post with executable code.</p>
+<p>Wanted to see if this actually works.</p>
 
 
 
  ]]></description>
-  <category>news</category>
-  <category>code</category>
-  <category>analysis</category>
-  <guid>https://arvindkalyan.github.io/posts/post-with-code/</guid>
+  <category>meta</category>
+  <guid>https://arvindkalyan.github.io/posts/first-post/</guid>
   <pubDate>Wed, 14 Oct 2026 07:00:00 GMT</pubDate>
-  <media:content url="https://arvindkalyan.github.io/posts/post-with-code/image.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>Welcome To My Blog</title>
-  <dc:creator>Tristan O&#39;Malley</dc:creator>
-  <link>https://arvindkalyan.github.io/posts/welcome/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>This is the first post in a Quarto blog. Welcome!</p>
-<p><img src="https://arvindkalyan.github.io/posts/welcome/thumbnail.jpg" class="img-fluid"></p>
-<p>Since this post doesn’t specify an explicit <code>image</code>, the first image in the post will be used in the listing page of posts.</p>
-
-
-
- ]]></description>
-  <category>news</category>
-  <guid>https://arvindkalyan.github.io/posts/welcome/</guid>
-  <pubDate>Sun, 11 Oct 2026 07:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
