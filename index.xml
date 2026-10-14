@@ -20,7 +20,6 @@
 
 
 
-
 <section id="motivation" class="level2">
 <h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
 <p>Binary RAR (Chen et al.) introduces a reward function to online RL used in post-training of LMs. The authors find a significant reduction in both short- and long-form hallucination rates, outperforming supervised learning and preference optimization baselines.</p>
