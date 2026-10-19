@@ -1,5 +1,5 @@
 ---
-title: "Binary RAR on a Narrow Corpus: Experiment 0"
+title: "Binary RAR with Incomplete Evidence: Experiment 0"
 author: "Arvind Kalyan"
 date: "2026-10-14"
 categories: [reinforcement learning, hallucination]
