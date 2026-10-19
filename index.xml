@@ -128,8 +128,8 @@
 <p>We report on key metrics from Experiment 0.</p>
 <section id="e0.1-sanity-check" class="level3">
 <h3 class="anchored" data-anchor-id="e0.1-sanity-check">E0.1: Sanity Check</h3>
-<p>To ensure the search engine works, we query the chunks with the expert answer and check recall of the associated golden abstract. Gold Recall@8 is 1.00, indicating that the golden abstract is always found in the first eight results, and that our engine fundamentally works.</p>
-<p>Across all gold-in conditions, the golden abstract appears in 86% of answers with 10% of the background corpus, gradually dropping to 72% with the full corpus to search from (Figure&nbsp;1a). This is meaningful; when the gold abstract isn’t retrieved, the reward rarely catches errors (Figure&nbsp;1b). Parse failures are negligible, and each answer contains an average of 22 claims.</p>
+<p>To ensure the search engine works, we query the chunks with the expert answer and check recall of the associated golden abstract. Gold Recall@8<sup>1</sup> is 1.00, indicating that the golden abstract is always found in the first eight results, and that our engine fundamentally works.</p>
+<p>Across all gold-in conditions, the golden abstract appears in 86% of answers<sup>2</sup> with 10% of the background corpus, gradually dropping to 72% with the full corpus to search from (Figure&nbsp;1a). This is meaningful; when the gold abstract isn’t retrieved, the reward<sup>3</sup> rarely catches errors (Figure&nbsp;1b). Parse failures<sup>4</sup> are negligible, and each answer contains an average of 22 claims<sup>5</sup>.</p>
 <div id="fig-retrieval" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-retrieval-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -143,18 +143,18 @@ Figure&nbsp;1: Retrieval in gold-in conditions as the background corpus grows. (
 </section>
 <section id="reward-probing" class="level3">
 <h3 class="anchored" data-anchor-id="reward-probing">Reward Probing</h3>
-<p>Average reward increases and detection rate decreases in gold-out conditions as opposed to gold-in conditions (Figure&nbsp;2), as contradictions are less likely to be caught without the gold abstract present. Given a narrow corpus, the background (non-gold) sources retrieved are less likely to contain the specific information needed to flag a contradiction.</p>
+<p>Average reward<sup>6</sup> increases and detection rate<sup>7</sup> decreases in gold-out conditions as opposed to gold-in conditions (Figure&nbsp;2), as contradictions are less likely to be caught without the gold abstract present. Given a narrow corpus, the background (non-gold) sources retrieved are less likely to contain the specific information needed to flag a contradiction.</p>
 <div id="fig-reward" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-reward-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="figures/fig2_reward_vs_gold.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2: Reward with the golden abstract in the corpus and removed. (a) Mean reward. (b) Detection rate, P(r = 0 \mid C \geq 1)."><img src="https://arvindkalyan.github.io/posts/binaryrar-exp0/figures/fig2_reward_vs_gold.svg" class="img-fluid figure-img"></a>
+<a href="figures/fig2_reward_vs_gold.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2: Reward with the golden abstract in the corpus and removed. (a) Mean reward. (b) Detection rate, P(\hat r = 0 \mid C \ge 1)."><img src="https://arvindkalyan.github.io/posts/binaryrar-exp0/figures/fig2_reward_vs_gold.svg" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-reward-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: Reward with the golden abstract in the corpus and removed. (a) Mean reward. (b) Detection rate, <img src="https://latex.codecogs.com/png.latex?P(r%20=%200%20%5Cmid%20C%20%5Cgeq%201)">.
+Figure&nbsp;2: Reward with the golden abstract in the corpus and removed. (a) Mean reward. (b) Detection rate, <img src="https://latex.codecogs.com/png.latex?P(%5Chat%20r%20=%200%20%5Cmid%20C%20%5Cge%201)">.
 </figcaption>
 </figure>
 </div>
-<p>Without the gold abstract, the reward no longer separates contradicted answers from clean ones (Figure&nbsp;3). Both fail at nearly the same rate, with detection 0.24 and false-flag rates 0.24 at 10% background, 0.36 and 0.41 at 100% corpus. With the gold abstract present, contradicted answers fail far more often (detection 0.51-0.54 vs false-flag 0.24-0.33).</p>
+<p>Without the gold abstract, the reward no longer separates contradicted answers from clean ones (Figure&nbsp;3). Both fail at nearly the same rate, with detection 0.24 and false-flag rates<sup>8</sup> 0.24 at 10% background, 0.36 and 0.41 at 100% corpus. With the gold abstract present, contradicted answers fail far more often (detection 0.51-0.54 vs false-flag 0.24-0.33).</p>
 <div id="fig-separation" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-separation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -165,7 +165,7 @@ Figure&nbsp;3: Detection rate (contradicted answers that fail) against false-fla
 </figcaption>
 </figure>
 </div>
-<p>Mixed-group ratios between .60 and .80 and sufficient reward variance across conditions (Figure&nbsp;4) also lend confidence that GRPO will have a meaningful reward signal and that training is feasible.</p>
+<p>Mixed-group ratios<sup>9</sup> between .60 and .80 and sufficient reward variance<sup>10</sup> across conditions (Figure&nbsp;4) also lend confidence that GRPO will have a meaningful reward signal and that training is feasible.</p>
 <div id="fig-signal" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-signal-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -179,8 +179,8 @@ Figure&nbsp;4: Training signal available to GRPO. (a) Share of questions whose e
 </section>
 <section id="rejection-sampling" class="level3">
 <h3 class="anchored" data-anchor-id="rejection-sampling">Rejection Sampling</h3>
-<p>All metrics compare between the kept-set and all answers, as responses with a reward of 1 approximate the Gibbs-optimum for a small KL penalty (beta). The contradiction rate across all answers is 47%, drops to 41-44% in gold-in cases, and does not meaningfully change in gold-out (Figure&nbsp;5a). Filtering for reward only reduces errors when the source is in the corpus.</p>
-<p>The kept set also runs a higher source-missing error share (Figure&nbsp;5b), where the retrieval misses the golden abstract and can’t flag unsupported and contradictory claims. Finally, there are no present signs of evidence-avoidance, as supported claims rise and length stays constant (Figure&nbsp;5c, d).</p>
+<p>All metrics compare between the kept-set<sup>11</sup> and all answers, as responses with a reward of 1 approximate the Gibbs-optimum for a small KL penalty (beta). The contradiction rate<sup>12</sup> across all answers is 47%, drops to 41-44% in gold-in cases, and does not meaningfully change in gold-out (Figure&nbsp;5a). Filtering for reward only reduces errors when the source is in the corpus.</p>
+<p>The kept set also runs a higher source-missing error share<sup>13</sup> (Figure&nbsp;5b), where the retrieval misses the golden abstract and can’t flag unsupported and contradictory claims. Finally, there are no present signs of evidence-avoidance, as supported claims<sup>14</sup> rise and length<sup>15</sup> stays constant (Figure&nbsp;5c, d).</p>
 <div id="fig-filter" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-filter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -194,7 +194,7 @@ Figure&nbsp;5: Effect of rejection sampling, measured as kept set minus all answ
 </section>
 <section id="e0.2-1" class="level3">
 <h3 class="anchored" data-anchor-id="e0.2-1">E0.2</h3>
-<p>On 40 WildChat training prompts, the reward verifier passes 84% of base answers, so the kept-set barely differs from the base model (FactScore 0.294 vs 0.295), while the authors’ checkpoint reaches 0.353 (Figure&nbsp;6). Compared to the trained checkpoint model given by the authors, our rejection sampling approximation is too weak to stand in for real training, and necessitates a full post-training run on the base model using the PubMedQA corpus. We also note that the checkpoint model produced shorter answers and, while rewards rose sharply from 0.57 to 0.84, contradiction rate on the PubMedQA questions did not improve (Figure&nbsp;7).</p>
+<p>On 40 WildChat training prompts, the reward verifier passes 84% of base answers, so the kept-set barely differs from the base model (FactScore<sup>16</sup> 0.294 vs 0.295), while the authors’ checkpoint reaches 0.353 (Figure&nbsp;6). Compared to the trained checkpoint model given by the authors, our rejection sampling approximation is too weak to stand in for real training, and necessitates a full post-training run on the base model using the PubMedQA corpus. We also note that the checkpoint model produced shorter answers and, while rewards rose sharply from 0.57 to 0.84, contradiction rate on the PubMedQA questions did not improve (Figure&nbsp;7).</p>
 <div id="fig-wildchat" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-wildchat-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -237,11 +237,33 @@ Figure&nbsp;8: Within-question correlation between claim counts and reward, with
 </figcaption>
 </figure>
 </div>
+<!-- Metric definitions (shown as hover popups on their footnote markers) -->
 
 
 </section>
 
- ]]></description>
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p><strong>Gold recall@8</strong>: <img src="https://latex.codecogs.com/png.latex?P(%5Ctext%7Bgold%20abstract%20in%20top%208%7D%20%5Cmid%20%5Ctext%7Bquery%7D%20=%20%5Ctext%7Bexpert%20answer%7D)">. Checks that search works.↩︎</p></li>
+<li id="fn2"><p><strong>Gold hit rate</strong>: <img src="https://latex.codecogs.com/png.latex?P(%5Ctext%7Bhit%7D)">, where hit = the gold abstract is among the 8 chunks retrieved for the model’s answer (gold-in only).↩︎</p></li>
+<li id="fn3"><p><strong>Reward</strong> <img src="https://latex.codecogs.com/png.latex?%5Chat%20r%20%5Cin%20%5C%7B0,1%5C%7D">: 1 if the verifier finds no contradiction between the answer and the top-8 retrieved chunks, else 0.↩︎</p></li>
+<li id="fn4"><p><strong>Parse failure</strong>: verifier output that isn’t valid JSON with a 0/1 score.↩︎</p></li>
+<li id="fn5"><p><strong>Claims per answer</strong>: mean of <img src="https://latex.codecogs.com/png.latex?S%20+%20C%20+%20U">.↩︎</p></li>
+<li id="fn6"><p><strong>Mean reward</strong>: <img src="https://latex.codecogs.com/png.latex?%5Cmathbb%7BE%7D%5B%5Chat%20r%5D">, the share of answers that pass.↩︎</p></li>
+<li id="fn7"><p><strong>Detection rate</strong>: <img src="https://latex.codecogs.com/png.latex?P(%5Chat%20r%20=%200%20%5Cmid%20C%20%5Cge%201)">, the share of contradicted answers that fail. Split by hit: <img src="https://latex.codecogs.com/png.latex?P(%5Chat%20r%20=%200%20%5Cmid%20C%20%5Cge%201,%20%5Ctext%7Bhit%7D)"> vs.&nbsp;no hit.↩︎</p></li>
+<li id="fn8"><p><strong>False-flag rate</strong>: <img src="https://latex.codecogs.com/png.latex?P(%5Chat%20r%20=%200%20%5Cmid%20C%20=%200)">, the share of clean answers that fail.↩︎</p></li>
+<li id="fn9"><p><strong>Mixed-group ratio</strong>: share of questions whose 8 answers include both passes and fails (<img src="https://latex.codecogs.com/png.latex?0%20%3C%20%5Csum%20%5Chat%20r%20%3C%208">). Only these give GRPO a learning signal.↩︎</p></li>
+<li id="fn10"><p><strong>Reward variance</strong>: mean over questions of <img src="https://latex.codecogs.com/png.latex?p(1-p)">, where <img src="https://latex.codecogs.com/png.latex?p"> is that question’s pass rate; maximum 0.25.↩︎</p></li>
+<li id="fn11"><p><strong>Kept set</strong>: per question, the answers with <img src="https://latex.codecogs.com/png.latex?%5Chat%20r%20=%201">, or all 8 if none pass. Approximates the trained policy <img src="https://latex.codecogs.com/png.latex?%5Cpi%5E*%20%5Cpropto%20%5Cpi_%5Ctext%7Bref%7D%5C,%20e%5E%7B%5Chat%20r/%5Cbeta%7D"> for small <img src="https://latex.codecogs.com/png.latex?%5Cbeta">.↩︎</p></li>
+<li id="fn12"><p><strong>Contradiction rate</strong>: <img src="https://latex.codecogs.com/png.latex?P(C%20%5Cge%201)">, the share of answers with at least one contradicted claim.↩︎</p></li>
+<li id="fn13"><p><strong>Source-missing error share</strong>: <img src="https://latex.codecogs.com/png.latex?%5Csum%20(C+U%20%5Cmid%20%5Ctext%7Bno%20hit%7D)%20%5C,/%5C,%20%5Csum%20(C+U)">, the share of wrong or unverifiable claims in answers where search missed the gold abstract.↩︎</p></li>
+<li id="fn14"><p><strong>Supported claims per answer</strong>: mean <img src="https://latex.codecogs.com/png.latex?S">.↩︎</p></li>
+<li id="fn15"><p><strong>Answer length</strong>: tokens after <code>&lt;/think&gt;</code>.↩︎</p></li>
+<li id="fn16"><p><strong>FactScore precision</strong>: share of extracted claims supported by the prompt’s cached web documents (the authors’ evaluation).↩︎</p></li>
+</ol>
+</section></div> ]]></description>
   <category>reinforcement learning</category>
   <category>hallucination</category>
   <guid>https://arvindkalyan.github.io/posts/binaryrar-exp0/</guid>
