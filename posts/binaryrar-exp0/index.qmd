@@ -133,37 +133,37 @@ We report on key metrics from Experiment 0.
 
 ### E0.1: Sanity Check
 
-To ensure the search engine works, we query the chunks with the expert answer and check recall of the associated golden abstract. Gold Recall@8 is 1.00, indicating that the golden abstract is always found in the first eight results, and that our engine fundamentally works.
+To ensure the search engine works, we query the chunks with the expert answer and check recall of the associated golden abstract. Gold Recall@8[^recall] is 1.00, indicating that the golden abstract is always found in the first eight results, and that our engine fundamentally works.
 
-Across all gold-in conditions, the golden abstract appears in 86% of answers with 10% of the background corpus, gradually dropping to 72% with the full corpus to search from (@{fig-retrieval}a). This is meaningful; when the gold abstract isn't retrieved, the reward rarely catches errors (@{fig-retrieval}b). Parse failures are negligible, and each answer contains an average of 22 claims.
+Across all gold-in conditions, the golden abstract appears in 86% of answers[^hit] with 10% of the background corpus, gradually dropping to 72% with the full corpus to search from (@{fig-retrieval}a). This is meaningful; when the gold abstract isn't retrieved, the reward[^rhat] rarely catches errors (@{fig-retrieval}b). Parse failures[^parse] are negligible, and each answer contains an average of 22 claims[^claims].
 
 ![Retrieval in gold-in conditions as the background corpus grows. (a) Share of answers whose BM25 top-8 contains the golden abstract. (b) Share of contradicted answers that receive a reward of 0, split by whether the golden abstract was retrieved.](figures/fig1_retrieval.svg){#fig-retrieval}
 
 ### Reward Probing
 
-Average reward increases and detection rate decreases in gold-out conditions as opposed to gold-in conditions (@fig-reward), as contradictions are less likely to be caught without the gold abstract present. Given a narrow corpus, the background (non-gold) sources retrieved are less likely to contain the specific information needed to flag a contradiction.
+Average reward[^mean] increases and detection rate[^det] decreases in gold-out conditions as opposed to gold-in conditions (@fig-reward), as contradictions are less likely to be caught without the gold abstract present. Given a narrow corpus, the background (non-gold) sources retrieved are less likely to contain the specific information needed to flag a contradiction.
 
-![Reward with the golden abstract in the corpus and removed. (a) Mean reward. (b) Detection rate, $P(r = 0 \mid C \geq 1)$.](figures/fig2_reward_vs_gold.svg){#fig-reward}
+![Reward with the golden abstract in the corpus and removed. (a) Mean reward. (b) Detection rate, $P(\hat r = 0 \mid C \ge 1)$.](figures/fig2_reward_vs_gold.svg){#fig-reward}
 
-Without the gold abstract, the reward no longer separates contradicted answers from clean ones (@fig-separation). Both fail at nearly the same rate, with detection 0.24 and false-flag rates 0.24 at 10% background, 0.36 and 0.41 at 100% corpus. With the gold abstract present, contradicted answers fail far more often (detection 0.51-0.54 vs false-flag 0.24-0.33).
+Without the gold abstract, the reward no longer separates contradicted answers from clean ones (@fig-separation). Both fail at nearly the same rate, with detection 0.24 and false-flag rates[^ff] 0.24 at 10% background, 0.36 and 0.41 at 100% corpus. With the gold abstract present, contradicted answers fail far more often (detection 0.51-0.54 vs false-flag 0.24-0.33).
 
 ![Detection rate (contradicted answers that fail) against false-flag rate (clean answers that fail). (a) With the golden abstract in the corpus, the two stay apart. (b) With it removed, they converge.](figures/fig3_separation.svg){#fig-separation}
 
-Mixed-group ratios between .60 and .80 and sufficient reward variance across conditions (@fig-signal) also lend confidence that GRPO will have a meaningful reward signal and that training is feasible.
+Mixed-group ratios[^mixed] between .60 and .80 and sufficient reward variance[^var] across conditions (@fig-signal) also lend confidence that GRPO will have a meaningful reward signal and that training is feasible.
 
 ![Training signal available to GRPO. (a) Share of questions whose eight rollouts include both passing and failing answers. (b) Mean within-question reward variance $p(1 - p)$, which cannot exceed 0.25.](figures/fig4_training_signal.svg){#fig-signal}
 
 ### Rejection Sampling
 
-All metrics compare between the kept-set and all answers, as responses with a reward of 1 approximate the Gibbs-optimum for a small KL penalty (beta). The contradiction rate across all answers is 47%, drops to 41-44% in gold-in cases, and does not meaningfully change in gold-out (@{fig-filter}a). Filtering for reward only reduces errors when the source is in the corpus.
+All metrics compare between the kept-set[^kept] and all answers, as responses with a reward of 1 approximate the Gibbs-optimum for a small KL penalty (beta). The contradiction rate[^contra] across all answers is 47%, drops to 41-44% in gold-in cases, and does not meaningfully change in gold-out (@{fig-filter}a). Filtering for reward only reduces errors when the source is in the corpus.
 
-The kept set also runs a higher source-missing error share (@{fig-filter}b), where the retrieval misses the golden abstract and can't flag unsupported and contradictory claims. Finally, there are no present signs of evidence-avoidance, as supported claims rise and length stays constant (@{fig-filter}c, d).
+The kept set also runs a higher source-missing error share[^miss] (@{fig-filter}b), where the retrieval misses the golden abstract and can't flag unsupported and contradictory claims. Finally, there are no present signs of evidence-avoidance, as supported claims[^cov] rise and length[^len] stays constant (@{fig-filter}c, d).
 
 ![Effect of rejection sampling, measured as kept set minus all answers. (a) Contradiction rate. (b) Source-missing error share. (c) Supported claims per answer. (d) Answer length in tokens.](figures/fig5_filter_effect.svg){#fig-filter}
 
 ### E0.2
 
-On 40 WildChat training prompts, the reward verifier passes 84% of base answers, so the kept-set barely differs from the base model (FactScore 0.294 vs 0.295), while the authors' checkpoint reaches 0.353 (@fig-wildchat). Compared to the trained checkpoint model given by the authors, our rejection sampling approximation is too weak to stand in for real training, and necessitates a full post-training run on the base model using the PubMedQA corpus. We also note that the checkpoint model produced shorter answers and, while rewards rose sharply from 0.57 to 0.84, contradiction rate on the PubMedQA questions did not improve (@fig-pubmedqa).
+On 40 WildChat training prompts, the reward verifier passes 84% of base answers, so the kept-set barely differs from the base model (FactScore[^fs] 0.294 vs 0.295), while the authors' checkpoint reaches 0.353 (@fig-wildchat). Compared to the trained checkpoint model given by the authors, our rejection sampling approximation is too weak to stand in for real training, and necessitates a full post-training run on the base model using the PubMedQA corpus. We also note that the checkpoint model produced shorter answers and, while rewards rose sharply from 0.57 to 0.84, contradiction rate on the PubMedQA questions did not improve (@fig-pubmedqa).
 
 ![E0.2(a), 40 WildChat training prompts. (a) FactScore precision and (b) claims per answer for the base model's answers, its kept set, and the authors' checkpoint.](figures/fig7_e02a_wildchat.svg){#fig-wildchat}
 
@@ -177,3 +177,37 @@ On 40 WildChat training prompts, the reward verifier passes 84% of base answers,
   - **H2b:** consistent for contradictions. Without the gold abstract, the reward doesn't separate contradictions from clean answers (@{fig-separation}b).
 
 ![Within-question correlation between claim counts and reward, with each question's mean removed. (a) Unsupported claims show no relationship with reward. (b) Supported claims correlate weakly and positively.](figures/fig6_unsupported_vs_reward.svg){#fig-unsupported}
+
+<!-- Metric definitions (shown as hover popups on their footnote markers) -->
+
+[^recall]: **Gold recall@8**: $P(\text{gold abstract in top 8} \mid \text{query} = \text{expert answer})$. Checks that search works.
+
+[^hit]: **Gold hit rate**: $P(\text{hit})$, where hit = the gold abstract is among the 8 chunks retrieved for the model's answer (gold-in only).
+
+[^rhat]: **Reward** $\hat r \in \{0,1\}$: 1 if the verifier finds no contradiction between the answer and the top-8 retrieved chunks, else 0.
+
+[^parse]: **Parse failure**: verifier output that isn't valid JSON with a 0/1 score.
+
+[^claims]: **Claims per answer**: mean of $S + C + U$.
+
+[^mean]: **Mean reward**: $\mathbb{E}[\hat r]$, the share of answers that pass.
+
+[^det]: **Detection rate**: $P(\hat r = 0 \mid C \ge 1)$, the share of contradicted answers that fail. Split by hit: $P(\hat r = 0 \mid C \ge 1, \text{hit})$ vs. no hit.
+
+[^ff]: **False-flag rate**: $P(\hat r = 0 \mid C = 0)$, the share of clean answers that fail.
+
+[^mixed]: **Mixed-group ratio**: share of questions whose 8 answers include both passes and fails ($0 < \sum \hat r < 8$). Only these give GRPO a learning signal.
+
+[^var]: **Reward variance**: mean over questions of $p(1-p)$, where $p$ is that question's pass rate; maximum 0.25.
+
+[^kept]: **Kept set**: per question, the answers with $\hat r = 1$, or all 8 if none pass. Approximates the trained policy $\pi^* \propto \pi_\text{ref}\, e^{\hat r/\beta}$ for small $\beta$.
+
+[^contra]: **Contradiction rate**: $P(C \ge 1)$, the share of answers with at least one contradicted claim.
+
+[^miss]: **Source-missing error share**: $\sum (C+U \mid \text{no hit}) \,/\, \sum (C+U)$, the share of wrong or unverifiable claims in answers where search missed the gold abstract.
+
+[^cov]: **Supported claims per answer**: mean $S$.
+
+[^len]: **Answer length**: tokens after `</think>`.
+
+[^fs]: **FactScore precision**: share of extracted claims supported by the prompt's cached web documents (the authors' evaluation).

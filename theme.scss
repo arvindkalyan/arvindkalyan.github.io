@@ -167,6 +167,37 @@ main a.quarto-xref {
   white-space: nowrap;
 }
 
+// Footnote markers: small, grey, out of the way; they take the accent color on hover
+main a.footnote-ref {
+  text-decoration: none;
+  color: #a3a6ac;
+  font-family: $font-family-sans-serif;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  padding-left: 0.08em;
+  transition: color 150ms ease;
+
+  sup {
+    font-size: 0.6em;
+    vertical-align: 0;
+    position: relative;
+    top: -0.75em;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  main a.footnote-ref:hover {
+    color: $primary;
+  }
+}
+
+// Definitions list at the end of the post
+main section.footnotes {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: #3a3c40;
+}
+
 // Callouts
 .callout {
   border-radius: 8px;
