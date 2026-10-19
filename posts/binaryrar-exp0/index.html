@@ -47,7 +47,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-1f4f77ebcfe21ae733eb008870c1d355.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-c743653503471605e473a8915a380019.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script src="../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
 <link href="../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
 <link href="../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
@@ -282,7 +282,6 @@ A_i = \dfrac{r(x, y_i) - \operatorname{mean}\left[r(x, y_1), \dots, r(x, y_n)\ri
 <li><strong>Abstained</strong> (boolean)</li>
 <li><strong>Final Decision</strong> (yes, no, maybe; comparable to final_decision)</li>
 </ul>
-<p>We will create a basic benchmark of the oracle model by hand-labeling 50 responses and manually verifying them against oracle outputs. These will be labeled blind to reward, condition, and oracle output, and we will report Cohen’s Kappa against the oracle.</p>
 <p>Note: the verifier and oracle only see final answers (any text after <code>&lt;/think&gt;</code>). Model responses that hit the token limit during thinking receive a 0 reward.</p>
 </section>
 </section>
@@ -304,11 +303,11 @@ A_i = \dfrac{r(x, y_i) - \operatorname{mean}\left[r(x, y_1), \dots, r(x, y_n)\ri
 </section>
 <section id="metric-writeup" class="level2">
 <h2 class="anchored" data-anchor-id="metric-writeup">Metric Writeup</h2>
-<p>We report on key metrics from Experiment 0.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p>We report on key metrics from Experiment 0.</p>
 <section id="e0.1-sanity-check" class="level3">
 <h3 class="anchored" data-anchor-id="e0.1-sanity-check">E0.1: Sanity Check</h3>
-<p>To ensure the search engine works, we query the chunks with the expert answer and check recall of the associated golden abstract. Gold Recall@8<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> is 1.00, indicating that the golden abstract is always found in the first eight results, and that our engine fundamentally works.</p>
-<p>Across all gold-in conditions, the golden abstract appears in 86% of answers<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> with 10% of the background corpus, gradually dropping to 72% with the full corpus to search from (<a href="#fig-retrieval" class="quarto-xref">Figure&nbsp;1</a> a). This is meaningful; when the gold abstract isn’t retrieved, the reward<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> rarely catches errors<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> (<a href="#fig-retrieval" class="quarto-xref">Figure&nbsp;1</a> b). Parse failures<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a> are negligible, and each answer contains an average of 22 claims<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a>.</p>
+<p>To ensure the search engine works, we query the chunks with the expert answer and check recall of the associated golden abstract. Gold Recall@8 is 1.00, indicating that the golden abstract is always found in the first eight results, and that our engine fundamentally works.</p>
+<p>Across all gold-in conditions, the golden abstract appears in 86% of answers with 10% of the background corpus, gradually dropping to 72% with the full corpus to search from (<a href="#fig-retrieval" class="quarto-xref">Figure&nbsp;1</a>a). This is meaningful; when the gold abstract isn’t retrieved, the reward rarely catches errors (<a href="#fig-retrieval" class="quarto-xref">Figure&nbsp;1</a>b). Parse failures are negligible, and each answer contains an average of 22 claims.</p>
 <div id="fig-retrieval" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-retrieval-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -322,18 +321,18 @@ Figure&nbsp;1: Retrieval in gold-in conditions as the background corpus grows. (
 </section>
 <section id="reward-probing" class="level3">
 <h3 class="anchored" data-anchor-id="reward-probing">Reward Probing</h3>
-<p>Average reward<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a> increases and detection rate<a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a> decreases in gold-out conditions as opposed to gold-in conditions (<a href="#fig-reward" class="quarto-xref">Figure&nbsp;2</a>), as contradictions are less likely to be caught without the gold abstract present. Given a narrow corpus, the background (non-gold) sources retrieved are less likely to contain the specific information needed to flag a contradiction.</p>
+<p>Average reward increases and detection rate decreases in gold-out conditions as opposed to gold-in conditions (<a href="#fig-reward" class="quarto-xref">Figure&nbsp;2</a>), as contradictions are less likely to be caught without the gold abstract present. Given a narrow corpus, the background (non-gold) sources retrieved are less likely to contain the specific information needed to flag a contradiction.</p>
 <div id="fig-reward" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-reward-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="figures/fig2_reward_vs_gold.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2: Reward with the golden abstract in the corpus and removed. (a) Mean reward. (b) Detection rate, P(\hat r = 0 \mid C \ge 1)."><img src="figures/fig2_reward_vs_gold.svg" class="img-fluid figure-img"></a>
+<a href="figures/fig2_reward_vs_gold.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2: Reward with the golden abstract in the corpus and removed. (a) Mean reward. (b) Detection rate, P(r = 0 \mid C \geq 1)."><img src="figures/fig2_reward_vs_gold.svg" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-reward-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: Reward with the golden abstract in the corpus and removed. (a) Mean reward. (b) Detection rate, <span class="math inline">\(P(\hat r = 0 \mid C \ge 1)\)</span>.
+Figure&nbsp;2: Reward with the golden abstract in the corpus and removed. (a) Mean reward. (b) Detection rate, <span class="math inline">\(P(r = 0 \mid C \geq 1)\)</span>.
 </figcaption>
 </figure>
 </div>
-<p>Without the gold abstract, the reward no longer separates contradicted answers from clean ones (<a href="#fig-separation" class="quarto-xref">Figure&nbsp;3</a>). Both fail at nearly the same rate, with detection 0.24 and false-flag rates<a href="#fn10" class="footnote-ref" id="fnref10" role="doc-noteref"><sup>10</sup></a> 0.24 at 10% background, 0.36 and 0.41 at 100% corpus. With the gold abstract present, contradicted answers fail far more often (detection 0.51-0.54 vs false-flag 0.24-0.33).</p>
+<p>Without the gold abstract, the reward no longer separates contradicted answers from clean ones (<a href="#fig-separation" class="quarto-xref">Figure&nbsp;3</a>). Both fail at nearly the same rate, with detection 0.24 and false-flag rates 0.24 at 10% background, 0.36 and 0.41 at 100% corpus. With the gold abstract present, contradicted answers fail far more often (detection 0.51-0.54 vs false-flag 0.24-0.33).</p>
 <div id="fig-separation" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-separation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -344,7 +343,7 @@ Figure&nbsp;3: Detection rate (contradicted answers that fail) against false-fla
 </figcaption>
 </figure>
 </div>
-<p>Mixed-group ratios<a href="#fn11" class="footnote-ref" id="fnref11" role="doc-noteref"><sup>11</sup></a> between .60 and .80 and sufficient reward variance<a href="#fn12" class="footnote-ref" id="fnref12" role="doc-noteref"><sup>12</sup></a> across conditions (<a href="#fig-signal" class="quarto-xref">Figure&nbsp;4</a>) also lend confidence that GRPO will have a meaningful reward signal and that training is feasible.</p>
+<p>Mixed-group ratios between .60 and .80 and sufficient reward variance across conditions (<a href="#fig-signal" class="quarto-xref">Figure&nbsp;4</a>) also lend confidence that GRPO will have a meaningful reward signal and that training is feasible.</p>
 <div id="fig-signal" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-signal-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -358,8 +357,8 @@ Figure&nbsp;4: Training signal available to GRPO. (a) Share of questions whose e
 </section>
 <section id="rejection-sampling" class="level3">
 <h3 class="anchored" data-anchor-id="rejection-sampling">Rejection Sampling</h3>
-<p>All metrics compare between the kept-set<a href="#fn13" class="footnote-ref" id="fnref13" role="doc-noteref"><sup>13</sup></a> and all answers<a href="#fn14" class="footnote-ref" id="fnref14" role="doc-noteref"><sup>14</sup></a>, as responses with a reward of 1 approximate the Gibbs-optimum for a small KL penalty (beta). The contradiction rate<a href="#fn15" class="footnote-ref" id="fnref15" role="doc-noteref"><sup>15</sup></a> across all answers is 47%, drops to 41-44% in gold-in cases, and does not meaningfully change in gold-out (<a href="#fig-filter" class="quarto-xref">Figure&nbsp;5</a> a). Filtering for reward only reduces errors when the source is in the corpus.</p>
-<p>The kept set also runs a higher source-missing error share<a href="#fn16" class="footnote-ref" id="fnref16" role="doc-noteref"><sup>16</sup></a> (<a href="#fig-filter" class="quarto-xref">Figure&nbsp;5</a> b), where the retrieval misses the golden abstract and can’t flag unsupported and contradictory claims. Finally, there are no present signs of evidence-avoidance, as supported claims<a href="#fn17" class="footnote-ref" id="fnref17" role="doc-noteref"><sup>17</sup></a> rise and length<a href="#fn18" class="footnote-ref" id="fnref18" role="doc-noteref"><sup>18</sup></a> stays constant (<a href="#fig-filter" class="quarto-xref">Figure&nbsp;5</a> c, d).</p>
+<p>All metrics compare between the kept-set and all answers, as responses with a reward of 1 approximate the Gibbs-optimum for a small KL penalty (beta). The contradiction rate across all answers is 47%, drops to 41-44% in gold-in cases, and does not meaningfully change in gold-out (<a href="#fig-filter" class="quarto-xref">Figure&nbsp;5</a>a). Filtering for reward only reduces errors when the source is in the corpus.</p>
+<p>The kept set also runs a higher source-missing error share (<a href="#fig-filter" class="quarto-xref">Figure&nbsp;5</a>b), where the retrieval misses the golden abstract and can’t flag unsupported and contradictory claims. Finally, there are no present signs of evidence-avoidance, as supported claims rise and length stays constant (<a href="#fig-filter" class="quarto-xref">Figure&nbsp;5</a>c, d).</p>
 <div id="fig-filter" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-filter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -373,7 +372,7 @@ Figure&nbsp;5: Effect of rejection sampling, measured as kept set minus all answ
 </section>
 <section id="e0.2-1" class="level3">
 <h3 class="anchored" data-anchor-id="e0.2-1">E0.2</h3>
-<p>On 40 WildChat training prompts, the reward verifier passes 84% of base answers, so the kept-set barely differs from the base model (FactScore<a href="#fn19" class="footnote-ref" id="fnref19" role="doc-noteref"><sup>19</sup></a> 0.294 vs 0.295), while the authors’ checkpoint reaches 0.353 (<a href="#fig-wildchat" class="quarto-xref">Figure&nbsp;6</a>). Compared to the trained checkpoint model given by the authors, our rejection sampling approximation is too weak to stand in for real training, and necessitates a full post-training run on the base model using the PubMedQA corpus. We also note that the checkpoint model produced shorter answers and, while rewards rose sharply from 0.57 to 0.84, contradiction rate on the PubMedQA questions did not improve (<a href="#fig-pubmedqa" class="quarto-xref">Figure&nbsp;7</a>).</p>
+<p>On 40 WildChat training prompts, the reward verifier passes 84% of base answers, so the kept-set barely differs from the base model (FactScore 0.294 vs 0.295), while the authors’ checkpoint reaches 0.353 (<a href="#fig-wildchat" class="quarto-xref">Figure&nbsp;6</a>). Compared to the trained checkpoint model given by the authors, our rejection sampling approximation is too weak to stand in for real training, and necessitates a full post-training run on the base model using the PubMedQA corpus. We also note that the checkpoint model produced shorter answers and, while rewards rose sharply from 0.57 to 0.84, contradiction rate on the PubMedQA questions did not improve (<a href="#fig-pubmedqa" class="quarto-xref">Figure&nbsp;7</a>).</p>
 <div id="fig-wildchat" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-wildchat-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -399,11 +398,11 @@ Figure&nbsp;7: E0.2(b), PubMedQA with the full background corpus and the golden 
 <section id="hypothesis-summary-so-far" class="level2">
 <h2 class="anchored" data-anchor-id="hypothesis-summary-so-far">Hypothesis Summary, so far</h2>
 <ul>
-<li><strong>H1:</strong> weakly supported. Filtering cuts contradictions only when the gold abstract is in the corpus, and only by a few points (<a href="#fig-filter" class="quarto-xref">Figure&nbsp;5</a> a).</li>
-<li><strong>H2:</strong> confirmed. Reward rises as the evidence thins (<a href="#fig-reward" class="quarto-xref">Figure&nbsp;2</a> a).
+<li><strong>H1:</strong> weakly supported. Filtering cuts contradictions only when the gold abstract is in the corpus, and only by a few points (<a href="#fig-filter" class="quarto-xref">Figure&nbsp;5</a>a).</li>
+<li><strong>H2:</strong> confirmed. Reward rises as the evidence thins (<a href="#fig-reward" class="quarto-xref">Figure&nbsp;2</a>a).
 <ul>
-<li><strong>H2a:</strong> not seen in static rewards. Answers with more unsupported claims don’t earn more reward<a href="#fn20" class="footnote-ref" id="fnref20" role="doc-noteref"><sup>20</sup></a> (<a href="#fig-unsupported" class="quarto-xref">Figure&nbsp;8</a>).</li>
-<li><strong>H2b:</strong> consistent for contradictions. Without the gold abstract, the reward doesn’t separate contradictions from clean answers (<a href="#fig-separation" class="quarto-xref">Figure&nbsp;3</a> b).</li>
+<li><strong>H2a:</strong> not seen in static rewards. Answers with more unsupported claims don’t earn more reward (<a href="#fig-unsupported" class="quarto-xref">Figure&nbsp;8</a>).</li>
+<li><strong>H2b:</strong> consistent for contradictions. Without the gold abstract, the reward doesn’t separate contradictions from clean answers (<a href="#fig-separation" class="quarto-xref">Figure&nbsp;3</a>b).</li>
 </ul></li>
 </ul>
 <div id="fig-unsupported" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -416,37 +415,11 @@ Figure&nbsp;8: Within-question correlation between claim counts and reward, with
 </figcaption>
 </figure>
 </div>
-<!-- Metric definitions (shown as hover popups on their footnote markers) -->
 
 
 </section>
 
-
-<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
-
-<ol>
-<li id="fn1"><p>Intervals are 95% bootstrap intervals over questions (and replicate seeds).<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p><strong>Gold recall@8</strong>: <span class="math inline">\(P(\text{gold abstract in top 8} \mid \text{query} = \text{expert answer})\)</span>. Checks that search works.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p><strong>Gold hit rate</strong>: <span class="math inline">\(P(\text{hit})\)</span>, where hit = the gold abstract is among the 8 chunks retrieved for the model’s answer (gold-in only).<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4"><p><strong>Reward</strong> <span class="math inline">\(\hat r \in \{0,1\}\)</span>: 1 if the verifier finds no contradiction between the answer and the top-8 retrieved chunks, else 0.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn5"><p>Each answer is split into atomic claims, labeled against the gold abstract: <strong>S</strong> supported, <strong>C</strong> contradicted, <strong>U</strong> unsupported (the abstract is silent).<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn6"><p><strong>Parse failure</strong>: verifier output that isn’t valid JSON with a 0/1 score.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn7"><p><strong>Claims per answer</strong>: mean of <span class="math inline">\(S + C + U\)</span>.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn8"><p><strong>Mean reward</strong>: <span class="math inline">\(\mathbb{E}[\hat r]\)</span>, the share of answers that pass.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn9"><p><strong>Detection rate</strong>: <span class="math inline">\(P(\hat r = 0 \mid C \ge 1)\)</span>, the share of contradicted answers that fail. Split by hit: <span class="math inline">\(P(\hat r = 0 \mid C \ge 1, \text{hit})\)</span> vs.&nbsp;no hit.<a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn10"><p><strong>False-flag rate</strong>: <span class="math inline">\(P(\hat r = 0 \mid C = 0)\)</span>, the share of clean answers that fail.<a href="#fnref10" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn11"><p><strong>Mixed-group ratio</strong>: share of questions whose 8 answers include both passes and fails (<span class="math inline">\(0 &lt; \sum \hat r &lt; 8\)</span>). Only these give GRPO a learning signal.<a href="#fnref11" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn12"><p><strong>Reward variance</strong>: mean over questions of <span class="math inline">\(p(1-p)\)</span>, where <span class="math inline">\(p\)</span> is that question’s pass rate; maximum 0.25.<a href="#fnref12" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn13"><p><strong>Kept set</strong>: per question, the answers with <span class="math inline">\(\hat r = 1\)</span>, or all 8 if none pass. Approximates the trained policy <span class="math inline">\(\pi^* \propto \pi_\text{ref}\, e^{\hat r/\beta}\)</span> for small <span class="math inline">\(\beta\)</span>.<a href="#fnref13" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn14"><p><strong>Change</strong>: kept-set value minus all-answer value, bootstrapped on the same question draws.<a href="#fnref14" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn15"><p><strong>Contradiction rate</strong>: <span class="math inline">\(P(C \ge 1)\)</span>, the share of answers with at least one contradicted claim.<a href="#fnref15" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn16"><p><strong>Source-missing error share</strong>: <span class="math inline">\(\sum (C+U \mid \text{no hit}) \,/\, \sum (C+U)\)</span>, the share of wrong or unverifiable claims in answers where search missed the gold abstract.<a href="#fnref16" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn17"><p><strong>Supported claims per answer</strong>: mean <span class="math inline">\(S\)</span>.<a href="#fnref17" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn18"><p><strong>Answer length</strong>: tokens after <code>&lt;/think&gt;</code>.<a href="#fnref18" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn19"><p><strong>FactScore precision</strong>: share of extracted claims supported by the prompt’s cached web documents (the authors’ evaluation).<a href="#fnref19" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn20"><p><strong>Within-question correlation</strong>: correlation between a claim count (U or S) and <span class="math inline">\(\hat r\)</span> after subtracting each question’s mean, i.e.&nbsp;comparing a question’s 8 answers with each other, as GRPO does.<a href="#fnref20" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-</ol>
-</section></div></main> <!-- /main -->
+</main> <!-- /main -->
 <script>
 // Quarto's hover popups (footnotes, figure previews) copy raw HTML that MathJax
 // never sees, so LaTeX shows as \( ... \). Typeset each popup when it opens.
