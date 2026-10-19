@@ -1,0 +1,26 @@
+<script>
+// Quarto's hover popups (footnotes, figure previews) copy raw HTML that MathJax
+// never sees, so LaTeX shows as \( ... \). Typeset each popup when it opens.
+(function () {
+  function typeset(el) {
+    var mj = window.MathJax;
+    if (!el || el.dataset.mathTypeset || !mj || !mj.typesetPromise) return;
+    el.dataset.mathTypeset = "1";
+    mj.typesetPromise([el]).catch(function () {
+      delete el.dataset.mathTypeset;
+    });
+  }
+
+  new MutationObserver(function (records) {
+    records.forEach(function (record) {
+      record.addedNodes.forEach(function (node) {
+        if (node.nodeType !== 1) return;
+        var root = node.matches("[data-tippy-root]")
+          ? node
+          : node.querySelector("[data-tippy-root]");
+        if (root) typeset(root);
+      });
+    });
+  }).observe(document.body, { childList: true, subtree: true });
+})();
+</script>

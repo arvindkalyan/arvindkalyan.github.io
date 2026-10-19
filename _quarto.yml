@@ -15,6 +15,7 @@ format:
       - brand
       - theme.scss
     css: styles.css
+    include-after-body: _hover-math.html
     grid:
       body-width: 700px
 
