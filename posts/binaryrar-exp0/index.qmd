@@ -62,7 +62,9 @@ The authors saw increased abstention when the model was allowed to say "I don't 
 
 The reward function serves as a proxy for factual correctness in training. The authors claim that the method doesn't require high-quality evidence, and that gaps in evidence are neutral rather than harmful. This assumption may hold for general knowledge questions, where gaps impact each prompt's rollout evenly. However, this assumption may be broken on specific tasks in a narrower domain where evidence gaps impact each rollout differently.
 
-We maintain three hypotheses for the model's performance against a narrow corpus where differences may arise between rollouts of the same prompt.
+We ask what a retrieval-checked reward actually rewards under incomplete evidence, and whether training exploits what it cannot see. A narrow corpus such as PubMedQA lets us control this exactly: each question has one known source abstract which we can keep, remove, or place in a larger corpus.
+
+We maintain three hypotheses for the model's performance:
 
 - **H1:** precision rises against questions in the specific domain, reducing hallucinations and reproducing the authors' results in a new domain.
 - **H2:** as corpus coverage drops, fewer claims can be contradicted, and more responses receive "1" rewards. Which consequence follows?
@@ -88,13 +90,13 @@ We sample 100 questions from PubMedQA (pqa_labeled), evenly stratified by final 
 
 #### Policy Model
 
-We generate a rollout of eight responses to each of the selected prompts using a Qwen3-4B model with thinking enabled. We test using the temperature of 1.0 in the authors' code, though we note that the recommended temperature is 0.7.
+We generate a rollout of eight responses to each of the selected prompts using a Qwen3-4B model with thinking enabled. We sample at temperature 1.0, matching the authors' training runs.
 
 #### Corpus
 
 We use BinaryRAR's provided chunking mechanism (Qwen3 tokenizer, 512 token chunks) on abstracts inside PubMedQA. We use all abstracts between labeled, unlabeled, and artificial prompts, deduplicated by their PubMed IDs, to create a comprehensive corpus. We do not add the question as a title.
 
-Rollouts are reported under nine corpus conditions across two dimensions:
+Rollouts are reported under ten corpus conditions across two dimensions:
 
 - **Golden abstract In/Out:** for each prompt, we test once with its golden abstract in the corpus and once left out.
 - **Background fraction:** 0% (control), 10%, 30%, 70%, 100% of the total corpus, selected uniformly randomly, probing the resultant behavior of the reward function. For the middle three proportions, we create three replicates. Replicates are nested within each seed.
@@ -105,13 +107,15 @@ We use the same verifier model (Qwen3-32B) and system prompt designed by the aut
 
 #### Oracle Model
 
-To evaluate the policy model's outputs against rewards, we use an oracle model (gpt-4.1-mini). It takes in the model's response, the golden abstract, and the target answer. It will check for the following:
+To evaluate the policy model's outputs independently of the reward, we use an oracle model (gpt-4.1). It sees the question, the golden abstract, and the model's response, but not the expert yes/no/maybe label. It returns:
 
-- **Atomic claim extraction:** each claim can be labeled supported, contradictory, unsupported, background claims (SCUB).
+- **Atomic claims**, each labeled supported (S), contradicted (C), or unsupported (U) against the golden abstract. Every S or C label must quote the abstract sentence it rests on.
 - **Abstained** (boolean)
-- **Final Decision** (yes, no, maybe; comparable to final_decision)
+- **Stance**: the response's own verdict (yes, no, maybe, none), compared against the expert final_decision afterwards.
 
-Note: the verifier and oracle only see final answers (any text after `</think>`). Model responses that hit the token limit during thinking receive a 0 reward.
+Against 50 responses we labeled by hand, the oracle agrees on whether a response contains a contradiction with Cohen's $\kappa$ = 0.48 (stance $\kappa$ = 0.67). This is moderate agreement, so absolute contradiction rates below are approximate; comparisons between conditions use the same oracle throughout, and the conclusions are unchanged under an earlier oracle prompt that did not require quotes.
+
+Note: the verifier and oracle only see final answers (any text after `</think>`). Model responses that hit the token limit during thinking receive a 0 reward; none of the 800 base responses did.
 
 ### E0.2
 
@@ -135,7 +139,7 @@ We report on key metrics from Experiment 0.
 
 To ensure the search engine works, we query the chunks with the expert answer and check recall of the associated golden abstract. Gold Recall@8[^recall] is 1.00, indicating that the golden abstract is always found in the first eight results, and that our engine fundamentally works.
 
-Across all gold-in conditions, the golden abstract appears in 86% of answers[^hit] with 10% of the background corpus, gradually dropping to 72% with the full corpus to search from (@{fig-retrieval}a). This is meaningful; when the gold abstract isn't retrieved, the reward[^rhat] rarely catches errors (@{fig-retrieval}b). Parse failures[^parse] are negligible, and each answer contains an average of 22 claims[^claims].
+Across all gold-in conditions, the golden abstract appears in 86% of answers[^hit] with 10% of the background corpus, gradually dropping to 72% with the full corpus to search from (@{fig-retrieval}a). This is meaningful; when the gold abstract isn't retrieved, the reward[^rhat] rarely catches errors (@{fig-retrieval}b). Parse failures[^parse] are negligible, and each answer contains an average of 20 claims[^claims].
 
 ![Retrieval in gold-in conditions as the background corpus grows. (a) Share of answers whose BM25 top-8 contains the golden abstract. (b) Share of contradicted answers that receive a reward of 0, split by whether the golden abstract was retrieved.](figures/fig1_retrieval.svg){#fig-retrieval}
 
@@ -145,7 +149,7 @@ Average reward[^mean] increases and detection rate[^det] decreases in gold-out c
 
 ![Reward with the golden abstract in the corpus and removed. (a) Mean reward. (b) Detection rate, $P(\hat r = 0 \mid C \ge 1)$.](figures/fig2_reward_vs_gold.svg){#fig-reward}
 
-Without the gold abstract, the reward no longer separates contradicted answers from clean ones (@fig-separation). Both fail at nearly the same rate, with detection 0.24 and false-flag rates[^ff] 0.24 at 10% background, 0.36 and 0.41 at 100% corpus. With the gold abstract present, contradicted answers fail far more often (detection 0.51-0.54 vs false-flag 0.24-0.33).
+Without the gold abstract, the reward no longer separates contradicted answers from clean ones (@fig-separation). Both fail at nearly the same rate, with detection 0.23 and false-flag rates[^ff] 0.25 at 10% background, 0.34 and 0.42 at 100% corpus. With the gold abstract present, contradicted answers fail far more often (detection 0.53-0.57 vs false-flag 0.25-0.34).
 
 ![Detection rate (contradicted answers that fail) against false-flag rate (clean answers that fail). (a) With the golden abstract in the corpus, the two stay apart. (b) With it removed, they converge.](figures/fig3_separation.svg){#fig-separation}
 
@@ -155,15 +159,15 @@ Mixed-group ratios[^mixed] between .60 and .80 and sufficient reward variance[^v
 
 ### Rejection Sampling
 
-All metrics compare between the kept-set[^kept] and all answers, as responses with a reward of 1 approximate the Gibbs-optimum for a small KL penalty (beta). The contradiction rate[^contra] across all answers is 47%, drops to 41-44% in gold-in cases, and does not meaningfully change in gold-out (@{fig-filter}a). Filtering for reward only reduces errors when the source is in the corpus.
+All metrics compare between the kept-set[^kept] and all answers, as responses with a reward of 1 approximate the Gibbs-optimum for a small KL penalty (beta). The contradiction rate[^contra] across all answers is 40%, drops to 34-37% in gold-in cases, and does not meaningfully change in gold-out (@{fig-filter}a). Filtering for reward only reduces errors when the source is in the corpus.
 
-The kept set also runs a higher source-missing error share[^miss] (@{fig-filter}b), where the retrieval misses the golden abstract and can't flag unsupported and contradictory claims. Finally, there are no present signs of evidence-avoidance, as supported claims[^cov] rise and length[^len] stays constant (@{fig-filter}c, d).
+The kept set also runs a higher source-missing error share[^miss], up 3.5-4.3 points at 10-70% background and not distinguishable from zero at 100% (@{fig-filter}b), where the retrieval misses the golden abstract and can't flag unsupported and contradictory claims. Finally, there are no present signs of evidence-avoidance, as supported claims[^cov] rise and length[^len] stays constant (@{fig-filter}c, d).
 
 ![Effect of rejection sampling, measured as kept set minus all answers. (a) Contradiction rate. (b) Source-missing error share. (c) Supported claims per answer. (d) Answer length in tokens.](figures/fig5_filter_effect.svg){#fig-filter}
 
 ### E0.2
 
-On 40 WildChat training prompts, the reward verifier passes 84% of base answers, so the kept-set barely differs from the base model (FactScore[^fs] 0.294 vs 0.295), while the authors' checkpoint reaches 0.353 (@fig-wildchat). Compared to the trained checkpoint model given by the authors, our rejection sampling approximation is too weak to stand in for real training, and necessitates a full post-training run on the base model using the PubMedQA corpus. We also note that the checkpoint model produced shorter answers and, while rewards rose sharply from 0.57 to 0.84, contradiction rate on the PubMedQA questions did not improve (@fig-pubmedqa).
+On 40 WildChat training prompts, the reward verifier passes 84% of base answers, so the kept-set barely differs from the base model (FactScore[^fs] 0.294 vs 0.295), while the authors' checkpoint reaches 0.353 (@fig-wildchat). Compared to the trained checkpoint model given by the authors, our rejection sampling approximation is too weak to stand in for real training, and necessitates a full post-training run on the base model using the PubMedQA corpus. We also note that the checkpoint model produced shorter answers and, while rewards rose sharply from 0.57 to 0.84, contradiction rate on the PubMedQA questions did not improve (0.40 vs 0.49, overlapping intervals; @fig-pubmedqa).
 
 ![E0.2(a), 40 WildChat training prompts. (a) FactScore precision and (b) claims per answer for the base model's answers, its kept set, and the authors' checkpoint.](figures/fig7_e02a_wildchat.svg){#fig-wildchat}
 
