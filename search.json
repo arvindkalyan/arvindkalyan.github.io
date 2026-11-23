@@ -7,6 +7,20 @@
     "text": "My name is Arvind Kalyan.\nI have spent the last year in Qualcomm’s Wireless Research Department, where we build the 6G user experience.\nPreviously, I graduated from UCLA with a BS and MS in Computer Science and a minor in bioinformatics. I worked in the Sankararaman Lab to complete my Master’s Thesis on structured missingness.\nI’m most proud of my work with Bruin Sports Analytics, where I was president and led the football consulting team. We worked with the football coaching staff to develop a scouting tool to aid their mid-week opponent preparation.\nMy research interests lie in post-training algorithms and imputation methods. Broadly, I am fascinated by the applications of these paradigms in bioinformatics. This blog exists to prove that.\n\nLinkedIn GitHub"
   },
   {
+    "objectID": "posts/binaryrar-exp1/index.html",
+    "href": "posts/binaryrar-exp1/index.html",
+    "title": "Binary RAR with Incomplete Evidence: Experiment 1",
+    "section": "",
+    "text": "Experiment 0 shows that reward can rise without contradiction rates improving: the authors’ released checkpoint, trained on WildChat, earned far higher reward on PubMedQA with no fewer contradictions. Experiment 1 asks the broader question: when we train with Binary RAR on PubMedQA questions, with the verifier searching the full corpus, does the model become more accurate, or does it learn to raise its reward without becoming more accurate?\n\n\nWe fine-tune Qwen3-8B (LoRA rank 32) on 4,000 questions from pqa_unlabeled and evaluate on 300 held-out questions from pqa_labeled, including Experiment 0’s 100. Experiment 0 used Qwen3-4B, but Tinker no longer offers it; Qwen3-8B is the model behind the paper’s headline results.\nFor the reward, a BM25 retriever pulls the top 8 chunks from the full set of PubMedQA abstracts, again using the answer as the query. The verifier is the same as in Experiment 0: Qwen3-32B with thinking off and temperature 0, now served through OpenRouter. Training follows the authors’ Tinker settings (16 answers per question, 16 questions per step, learning rate 1e-5, KL penalty 0.001), run on-policy for 250 steps. This is about a quarter of the paper’s training budget (roughly 2,000 steps of 128 answers each); we checkpoint every 50 steps so the trend is visible and training can be extended."
+  },
+  {
+    "objectID": "posts/binaryrar-exp1/index.html#experiment-1",
+    "href": "posts/binaryrar-exp1/index.html#experiment-1",
+    "title": "Binary RAR with Incomplete Evidence: Experiment 1",
+    "section": "",
+    "text": "Experiment 0 shows that reward can rise without contradiction rates improving: the authors’ released checkpoint, trained on WildChat, earned far higher reward on PubMedQA with no fewer contradictions. Experiment 1 asks the broader question: when we train with Binary RAR on PubMedQA questions, with the verifier searching the full corpus, does the model become more accurate, or does it learn to raise its reward without becoming more accurate?\n\n\nWe fine-tune Qwen3-8B (LoRA rank 32) on 4,000 questions from pqa_unlabeled and evaluate on 300 held-out questions from pqa_labeled, including Experiment 0’s 100. Experiment 0 used Qwen3-4B, but Tinker no longer offers it; Qwen3-8B is the model behind the paper’s headline results.\nFor the reward, a BM25 retriever pulls the top 8 chunks from the full set of PubMedQA abstracts, again using the answer as the query. The verifier is the same as in Experiment 0: Qwen3-32B with thinking off and temperature 0, now served through OpenRouter. Training follows the authors’ Tinker settings (16 answers per question, 16 questions per step, learning rate 1e-5, KL penalty 0.001), run on-policy for 250 steps. This is about a quarter of the paper’s training budget (roughly 2,000 steps of 128 answers each); we checkpoint every 50 steps so the trend is visible and training can be extended."
+  },
+  {
     "objectID": "posts/binaryrar-exp0/index.html",
     "href": "posts/binaryrar-exp0/index.html",
     "title": "Binary RAR with Incomplete Evidence: Experiment 0",
@@ -53,6 +67,6 @@
     "href": "index.html",
     "title": "Arvind Kalyan",
     "section": "",
-    "text": "Binary RAR with Incomplete Evidence: Experiment 0\n\n\n\nreinforcement learning\n\nhallucination\n\n\n\n\n\n\n\n\n\nOct 14, 2026\n\n\nArvind Kalyan\n\n\n\n\n\nNo matching items"
+    "text": "Binary RAR with Incomplete Evidence: Experiment 1\n\n\n\nreinforcement learning\n\nhallucination\n\n\n\n\n\n\n\n\n\nNov 17, 2026\n\n\nArvind Kalyan\n\n\n\n\n\n\n\n\n\n\n\n\nBinary RAR with Incomplete Evidence: Experiment 0\n\n\n\nreinforcement learning\n\nhallucination\n\n\n\n\n\n\n\n\n\nOct 14, 2026\n\n\nArvind Kalyan\n\n\n\n\n\nNo matching items"
   }
 ]

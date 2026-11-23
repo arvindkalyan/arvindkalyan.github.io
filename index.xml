@@ -10,7 +10,34 @@
 <atom:link href="https://arvindkalyan.github.io/index.xml" rel="self" type="application/rss+xml"/>
 <description>A blog built with Quarto</description>
 <generator>quarto-1.10.19</generator>
-<lastBuildDate>Wed, 14 Oct 2026 07:00:00 GMT</lastBuildDate>
+<lastBuildDate>Tue, 17 Nov 2026 08:00:00 GMT</lastBuildDate>
+<item>
+  <title>Binary RAR with Incomplete Evidence: Experiment 1</title>
+  <dc:creator>Arvind Kalyan</dc:creator>
+  <link>https://arvindkalyan.github.io/posts/binaryrar-exp1/</link>
+  <description><![CDATA[ 
+
+
+
+
+<section id="experiment-1" class="level2">
+<h2 class="anchored" data-anchor-id="experiment-1">Experiment 1</h2>
+<p>Experiment 0 shows that reward can rise without contradiction rates improving: the authors’ released checkpoint, trained on WildChat, earned far higher reward on PubMedQA with no fewer contradictions. Experiment 1 asks the broader question: when we train with Binary RAR on PubMedQA questions, with the verifier searching the full corpus, does the model become more accurate, or does it learn to raise its reward without becoming more accurate?</p>
+<section id="setup" class="level3">
+<h3 class="anchored" data-anchor-id="setup">Setup</h3>
+<p>We fine-tune Qwen3-8B (LoRA rank 32) on 4,000 questions from <code>pqa_unlabeled</code> and evaluate on 300 held-out questions from <code>pqa_labeled</code>, including Experiment 0’s 100. Experiment 0 used Qwen3-4B, but Tinker no longer offers it; Qwen3-8B is the model behind the paper’s headline results.</p>
+<p>For the reward, a BM25 retriever pulls the top 8 chunks from the full set of PubMedQA abstracts, again using the answer as the query. The verifier is the same as in Experiment 0: Qwen3-32B with thinking off and temperature 0, now served through OpenRouter. Training follows the authors’ Tinker settings (16 answers per question, 16 questions per step, learning rate 1e-5, KL penalty 0.001), run on-policy for 250 steps. This is about a quarter of the paper’s training budget (roughly 2,000 steps of 128 answers each); we checkpoint every 50 steps so the trend is visible and training can be extended.</p>
+
+
+</section>
+</section>
+
+ ]]></description>
+  <category>reinforcement learning</category>
+  <category>hallucination</category>
+  <guid>https://arvindkalyan.github.io/posts/binaryrar-exp1/</guid>
+  <pubDate>Tue, 17 Nov 2026 08:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Binary RAR with Incomplete Evidence: Experiment 0</title>
   <dc:creator>Arvind Kalyan</dc:creator>
