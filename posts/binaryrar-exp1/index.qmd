@@ -1,0 +1,18 @@
+---
+title: "Binary RAR with Incomplete Evidence: Experiment 1"
+author: "Arvind Kalyan"
+date: "2026-11-17"
+categories: [reinforcement learning, hallucination]
+lightbox: true
+draft: false
+---
+
+## Experiment 1
+
+Experiment 0 shows that reward can rise without contradiction rates improving: the authors' released checkpoint, trained on WildChat, earned far higher reward on PubMedQA with no fewer contradictions. Experiment 1 asks the broader question: when we train with Binary RAR on PubMedQA questions, with the verifier searching the full corpus, does the model become more accurate, or does it learn to raise its reward without becoming more accurate?
+
+### Setup
+
+We fine-tune Qwen3-8B (LoRA rank 32) on 4,000 questions from `pqa_unlabeled` and evaluate on 300 held-out questions from `pqa_labeled`, including Experiment 0's 100. Experiment 0 used Qwen3-4B, but Tinker no longer offers it; Qwen3-8B is the model behind the paper's headline results.
+
+For the reward, a BM25 retriever pulls the top 8 chunks from the full set of PubMedQA abstracts, again using the answer as the query. The verifier is the same as in Experiment 0: Qwen3-32B with thinking off and temperature 0, now served through OpenRouter. Training follows the authors' Tinker settings (16 answers per question, 16 questions per step, learning rate 1e-5, KL penalty 0.001), run on-policy for 250 steps. This is about a quarter of the paper's training budget (roughly 2,000 steps of 128 answers each); we checkpoint every 50 steps so the trend is visible and training can be extended.
